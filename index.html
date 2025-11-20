@@ -4,10 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager Pro</title>
-    <!-- Use Tailwind via CDN for rapid styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Animations for smooth UI transitions */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
         @keyframes slideIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -16,147 +20,308 @@
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        .task-item { animation: slideIn 0.3s ease-out; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .task-item { 
+            animation: slideIn 0.3s ease-out;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .task-item:hover {
+            transform: translateY(-4px) scale(1.01);
+        }
+        
         .fade-in { animation: fadeIn 0.2s ease-out; }
-        /* Priority color indicators */
-        .priority-low { border-left: 4px solid #10b981; }
-        .priority-medium { border-left: 4px solid #3b82f6; }
-        .priority-high { border-left: 4px solid #f59e0b; }
-        .priority-urgent { border-left: 4px solid #ef4444; }
-        .task-completed { opacity: 0.6; text-decoration: line-through; }
+        
+        .priority-low { 
+            border-left: 4px solid #10b981;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+        }
+        .priority-medium { 
+            border-left: 4px solid #3b82f6;
+            background: linear-gradient(135deg, #ffffff 0%, #eff6ff 100%);
+        }
+        .priority-high { 
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+        }
+        .priority-urgent { 
+            border-left: 4px solid #ef4444;
+            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+        }
+        
+        .task-completed { 
+            opacity: 0.7; 
+            text-decoration: line-through;
+            filter: grayscale(0.3);
+        }
+        
+        .glass {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #4facfe 75%, #00f2fe 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+        }
+        
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        button {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        .stat-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .shadow-elegant {
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.15);
+        }
+        
+        .shadow-elegant-hover:hover {
+            box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.25);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #764ba2 0%, #667eea 100%);
+        }
+        
+        #toast {
+            backdrop-filter: blur(10px);
+            background: rgba(30, 41, 59, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .tag-pill {
+            transition: all 0.2s ease;
+        }
+        
+        .tag-pill:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.2);
+        }
+        
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        .status-badge {
+            box-shadow: 0 0 15px -3px currentColor;
+        }
+        
+        .empty-icon {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% {
+                box-shadow: 0 0 0 0 currentColor;
+            }
+            100% {
+                box-shadow: 0 0 0 10px transparent;
+            }
+        }
+        
+        .status-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-50 to-slate-100 min-h-screen">
-    <div class="container mx-auto px-4 py-8 max-w-6xl">
+<body class="min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-7xl">
         <!-- Header -->
         <div class="text-center mb-8 fade-in">
             <div class="flex items-center justify-center gap-3 mb-4">
-                <h1 class="text-5xl font-bold text-slate-800">📋 Task Manager Pro</h1>
-                <div id="connectionStatus" class="flex items-center gap-2 px-4 py-2 rounded-full">
-                    <div id="statusDot" class="w-3 h-3 rounded-full animate-pulse"></div>
+                <h1 class="text-5xl font-bold text-white drop-shadow-lg">📋 Task Manager Pro</h1>
+                <div id="connectionStatus" class="flex items-center gap-2 px-4 py-2 rounded-full glass">
+                    <div id="statusDot" class="w-3 h-3 rounded-full status-pulse"></div>
                     <span id="statusText" class="text-sm font-semibold"></span>
                 </div>
             </div>
-            <p class="text-slate-600">Organiza tu vida de manera inteligente</p>
+            <p class="text-white text-lg drop-shadow-md font-medium">Organiza tu vida de manera inteligente</p>
         </div>
+        
         <!-- Stats Dashboard -->
         <div id="stats" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 fade-in">
-            <div class="bg-white rounded-xl shadow-md p-4 text-center hover:shadow-lg transition">
-                <div class="text-2xl font-bold text-slate-700" id="stat-total">0</div>
-                <div class="text-sm text-slate-500">Total</div>
+            <div class="stat-card rounded-2xl shadow-elegant p-5 text-center">
+                <div class="text-3xl font-bold bg-gradient-to-r from-slate-600 to-slate-800 bg-clip-text text-transparent" id="stat-total">0</div>
+                <div class="text-sm text-slate-600 font-semibold mt-1">Total</div>
             </div>
-            <div class="bg-yellow-50 rounded-xl shadow-md p-4 text-center hover:shadow-lg transition">
-                <div class="text-2xl font-bold text-yellow-600" id="stat-pending">0</div>
-                <div class="text-sm text-yellow-700">Pendientes</div>
+            <div class="stat-card rounded-2xl shadow-elegant p-5 text-center bg-gradient-to-br from-yellow-50 to-yellow-100">
+                <div class="text-3xl font-bold text-yellow-600" id="stat-pending">0</div>
+                <div class="text-sm text-yellow-700 font-semibold mt-1">Pendientes</div>
             </div>
-            <div class="bg-blue-50 rounded-xl shadow-md p-4 text-center hover:shadow-lg transition">
-                <div class="text-2xl font-bold text-blue-600" id="stat-progress">0</div>
-                <div class="text-sm text-blue-700">En Progreso</div>
+            <div class="stat-card rounded-2xl shadow-elegant p-5 text-center bg-gradient-to-br from-blue-50 to-blue-100">
+                <div class="text-3xl font-bold text-blue-600" id="stat-progress">0</div>
+                <div class="text-sm text-blue-700 font-semibold mt-1">En Progreso</div>
             </div>
-            <div class="bg-green-50 rounded-xl shadow-md p-4 text-center hover:shadow-lg transition">
-                <div class="text-2xl font-bold text-green-600" id="stat-completed">0</div>
-                <div class="text-sm text-green-700">Completadas</div>
+            <div class="stat-card rounded-2xl shadow-elegant p-5 text-center bg-gradient-to-br from-green-50 to-green-100">
+                <div class="text-3xl font-bold text-green-600" id="stat-completed">0</div>
+                <div class="text-sm text-green-700 font-semibold mt-1">Completadas</div>
             </div>
-            <div class="bg-red-50 rounded-xl shadow-md p-4 text-center hover:shadow-lg transition">
-                <div class="text-2xl font-bold text-red-600" id="stat-cancelled">0</div>
-                <div class="text-sm text-red-700">Canceladas</div>
+            <div class="stat-card rounded-2xl shadow-elegant p-5 text-center bg-gradient-to-br from-red-50 to-red-100">
+                <div class="text-3xl font-bold text-red-600" id="stat-cancelled">0</div>
+                <div class="text-sm text-red-700 font-semibold mt-1">Canceladas</div>
             </div>
         </div>
-        <!-- Main Content -->
-        <div class="grid md:grid-cols-3 gap-8">
-            <!-- Create Task Form -->
-            <div class="md:col-span-1">
-                <div class="bg-white rounded-2xl shadow-xl p-6 sticky top-4">
-                    <h2 class="text-2xl font-bold text-slate-800 mb-6">✨ Nueva Tarea</h2>
-                    <form id="taskForm" class="space-y-4">
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Título *</label>
-                            <input type="text" id="taskTitle" required minlength="3" maxlength="200" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition" placeholder="Ej: Completar proyecto...">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Descripción</label>
-                            <textarea id="taskDescription" maxlength="1000" rows="3" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition resize-none" placeholder="Detalles adicionales..."></textarea>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Prioridad</label>
-                            <select id="taskPriority" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition">
-                                <option value="1">🟢 Baja</option>
-                                <option value="2" selected>🔵 Media</option>
-                                <option value="3">🟠 Alta</option>
-                                <option value="4">🔴 Urgente</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Fecha Límite</label>
-                            <input type="date" id="taskDueDate" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-semibold text-slate-700 mb-2">Etiquetas</label>
-                            <input type="text" id="taskTags" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition" placeholder="trabajo, urgente, personal...">
-                            <p class="text-xs text-slate-500 mt-1">Separadas por comas</p>
-                        </div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-bold py-4 rounded-xl hover:from-blue-600 hover:to-blue-700 transition shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">➕ Crear Tarea</button>
-                    </form>
-                </div>
-            </div>
-            <!-- Tasks List -->
-            <div class="md:col-span-2">
-                <!-- Filters -->
-                <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <div class="flex-1">
-                            <input type="text" id="searchInput" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition" placeholder="🔍 Buscar tareas...">
-                        </div>
-                        <div>
-                            <select id="filterStatus" class="w-full md:w-48 px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition">
-                                <option value="">Todos los estados</option>
-                                <option value="PENDING">Pendientes</option>
-                                <option value="IN_PROGRESS">En Progreso</option>
-                                <option value="COMPLETED">Completadas</option>
-                                <option value="CANCELLED">Canceladas</option>
-                            </select>
-                        </div>
-                        <button id="deleteAllBtn" class="px-6 py-3 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 transition shadow-md hover:shadow-lg">🗑️ Eliminar Todas</button>
+        
+        <!-- Create Task Form - Full Width -->
+        <div class="mb-8">
+            <div class="form-container rounded-3xl shadow-elegant-hover p-8">
+                <h2 class="text-3xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent mb-6 text-center">✨ Crear Nueva Tarea</h2>
+                <form id="taskForm" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Título *</label>
+                        <input type="text" id="taskTitle" required minlength="3" maxlength="200" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition bg-white" placeholder="Ej: Completar proyecto...">
                     </div>
-                </div>
-                <!-- Task List -->
-                <div id="taskList" class="space-y-4"></div>
-                <!-- Empty State -->
-                <div id="emptyState" class="bg-white rounded-2xl shadow-xl p-12 text-center hidden">
-                    <div class="text-6xl mb-4">📝</div>
-                    <h3 class="text-2xl font-bold text-slate-700 mb-2">No hay tareas</h3>
-                    <p class="text-slate-500">Crea tu primera tarea para comenzar</p>
-                </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Prioridad</label>
+                        <select id="taskPriority" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition bg-white">
+                            <option value="1">🟢 Baja</option>
+                            <option value="2" selected>🔵 Media</option>
+                            <option value="3">🟠 Alta</option>
+                            <option value="4">🔴 Urgente</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Fecha Límite</label>
+                        <input type="date" id="taskDueDate" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition bg-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Descripción</label>
+                        <textarea id="taskDescription" maxlength="1000" rows="3" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition resize-none bg-white" placeholder="Detalles adicionales..."></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Etiquetas</label>
+                        <input type="text" id="taskTags" class="w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:border-blue-500 focus:outline-none transition bg-white" placeholder="trabajo, urgente, personal...">
+                        <p class="text-xs text-slate-500 mt-1 font-medium">Separadas por comas</p>
+                    </div>
+                    <div class="md:col-span-2 lg:col-span-3 flex justify-center mt-2">
+                        <button type="submit" class="px-16 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 text-white font-bold py-4 rounded-xl transition shadow-elegant transform">➕ Crear Tarea</button>
+                    </div>
+                </form>
             </div>
         </div>
+        
+        <!-- Filters -->
+        <div class="glass rounded-3xl shadow-elegant-hover p-6 mb-6">
+            <div class="flex flex-col md:flex-row gap-4 items-center">
+                <div class="flex-1 w-full">
+                    <input type="text" id="searchInput" class="w-full px-4 py-3 border-2 border-white/50 rounded-xl focus:border-blue-400 focus:outline-none transition bg-white/80" placeholder="🔍 Buscar tareas...">
+                </div>
+                <div>
+                    <select id="filterStatus" class="w-full md:w-56 px-4 py-3 border-2 border-white/50 rounded-xl focus:border-blue-400 focus:outline-none transition bg-white/80">
+                        <option value="">Todos los estados</option>
+                        <option value="PENDING">Pendientes</option>
+                        <option value="IN_PROGRESS">En Progreso</option>
+                        <option value="COMPLETED">Completadas</option>
+                        <option value="CANCELLED">Canceladas</option>
+                    </select>
+                </div>
+                <button id="deleteAllBtn" class="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-bold rounded-xl transition shadow-elegant whitespace-nowrap">🗑️ Eliminar Todas</button>
+            </div>
+        </div>
+        
+        <!-- Task List - Full Width Grid -->
+        <div id="taskList" class="grid md:grid-cols-2 gap-6"></div>
+        
+        <!-- Empty State -->
+        <div id="emptyState" class="glass rounded-3xl shadow-elegant-hover p-12 text-center hidden">
+            <div class="text-6xl mb-4 empty-icon">📝</div>
+            <h3 class="text-2xl font-bold text-slate-700 mb-2">No hay tareas</h3>
+            <p class="text-slate-600 font-medium">Crea tu primera tarea para comenzar</p>
+        </div>
     </div>
+    
     <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-8 right-8 bg-slate-800 text-white px-6 py-4 rounded-xl shadow-2xl hidden transform transition-all">
-        <p id="toastMessage"></p>
+    <div id="toast" class="fixed bottom-8 right-8 px-6 py-4 rounded-2xl shadow-elegant hidden transform transition-all">
+        <p id="toastMessage" class="text-white font-semibold"></p>
     </div>
+    
     <script>
-        // Backend API base URL (update as needed for your deployment)
         const API_URL = 'https://proyecto-caso-testigo-perez-carvajal.onrender.com';
-        // Array to hold tasks in memory for filtering/search
         let tasks = [];
-        // Timers
         let searchTimeout = null;
         let connectionCheckInterval = null;
-        /**
-         * Initialize the application
-         */
+
         document.addEventListener('DOMContentLoaded', () => {
             console.log('Initializing Task Manager Pro');
             checkConnection();
             loadTasks();
             loadStats();
             setupEventListeners();
-            // Re-check connection every 5 seconds
             connectionCheckInterval = setInterval(checkConnection, 5000);
         });
-        /**
-         * Check if backend is reachable and update connection status
-         */
+
         async function checkConnection() {
             try {
                 console.log('Checking backend connection...');
@@ -172,39 +337,31 @@
                 updateConnectionStatus(false);
             }
         }
-        /**
-         * Update UI to reflect connection state
-         */
+
         function updateConnectionStatus(isConnected) {
             const statusContainer = document.getElementById('connectionStatus');
             const statusDot = document.getElementById('statusDot');
             const statusText = document.getElementById('statusText');
             if (isConnected) {
-                statusContainer.className = 'flex items-center gap-2 px-4 py-2 rounded-full bg-green-100';
-                statusDot.className = 'w-3 h-3 rounded-full bg-green-500 animate-pulse';
+                statusContainer.className = 'flex items-center gap-2 px-4 py-2 rounded-full glass';
+                statusDot.className = 'w-3 h-3 rounded-full bg-green-500 status-pulse';
                 statusText.className = 'text-sm font-semibold text-green-700';
                 statusText.textContent = 'Conectado';
             } else {
-                statusContainer.className = 'flex items-center gap-2 px-4 py-2 rounded-full bg-red-100';
-                statusDot.className = 'w-3 h-3 rounded-full bg-red-500 animate-pulse';
+                statusContainer.className = 'flex items-center gap-2 px-4 py-2 rounded-full glass';
+                statusDot.className = 'w-3 h-3 rounded-full bg-red-500 status-pulse';
                 statusText.className = 'text-sm font-semibold text-red-700';
                 statusText.textContent = 'Desconectado';
             }
         }
-        /**
-         * Register event listeners for form and filter controls
-         */
+
         function setupEventListeners() {
             document.getElementById('taskForm').addEventListener('submit', handleCreateTask);
             document.getElementById('searchInput').addEventListener('input', handleSearch);
             document.getElementById('filterStatus').addEventListener('change', handleFilter);
             document.getElementById('deleteAllBtn').addEventListener('click', handleDeleteAll);
         }
-        /**
-         * Helper to call API endpoints consistently
-         * @param {string} endpoint - API path starting with '/'
-         * @param {object} options - fetch options
-         */
+
         async function apiCall(endpoint, options = {}) {
             const opts = {
                 mode: 'cors',
@@ -214,7 +371,6 @@
             };
             try {
                 const response = await fetch(`${API_URL}${endpoint}`, opts);
-                // When response is not OK (but not 204), throw to handle in catch
                 if (!response.ok && response.status !== 204) {
                     let errMsg = 'Error en la petición';
                     try {
@@ -225,7 +381,6 @@
                     }
                     throw new Error(errMsg);
                 }
-                // No content
                 if (response.status === 204) return null;
                 return await response.json();
             } catch (error) {
@@ -234,9 +389,7 @@
                 throw error;
             }
         }
-        /**
-         * Load tasks from API; optionally filter by status
-         */
+
         async function loadTasks(status = null) {
             const endpoint = status ? `/tasks?status=${encodeURIComponent(status)}` : '/tasks';
             try {
@@ -247,9 +400,7 @@
                 console.error('Failed to load tasks:', error);
             }
         }
-        /**
-         * Load statistics dashboard from API
-         */
+
         async function loadStats() {
             try {
                 console.log('Loading statistics...');
@@ -265,9 +416,7 @@
                 console.error('Failed to load statistics:', error);
             }
         }
-        /**
-         * Handle task creation submission
-         */
+
         async function handleCreateTask(e) {
             e.preventDefault();
             const title = document.getElementById('taskTitle').value.trim();
@@ -299,9 +448,7 @@
                 console.error('Task creation failed:', error);
             }
         }
-        /**
-         * Update the status of an existing task
-         */
+
         async function updateTaskStatus(taskId, newStatus) {
             try {
                 console.log(`Updating task ${taskId} status to ${newStatus}`);
@@ -313,9 +460,7 @@
                 console.error('Failed to update status:', error);
             }
         }
-        /**
-         * Delete a single task by ID after confirmation
-         */
+
         async function deleteTask(taskId) {
             if (!confirm('¿Estás seguro de eliminar esta tarea?')) return;
             try {
@@ -328,9 +473,7 @@
                 console.error('Failed to delete task:', error);
             }
         }
-        /**
-         * Delete all tasks for current session
-         */
+
         async function handleDeleteAll() {
             if (!confirm('¿Estás seguro de eliminar TODAS las tareas?')) return;
             try {
@@ -343,9 +486,7 @@
                 console.error('Failed to delete all tasks:', error);
             }
         }
-        /**
-         * Handle search input; call API when query has at least 2 characters
-         */
+
         function handleSearch(e) {
             clearTimeout(searchTimeout);
             const query = e.target.value.trim();
@@ -363,17 +504,13 @@
                 }
             }, 300);
         }
-        /**
-         * Handle status filter change
-         */
+
         function handleFilter(e) {
             const status = e.target.value;
             console.log('Applying status filter:', status);
             loadTasks(status || null);
         }
-        /**
-         * Render tasks in the UI
-         */
+
         function renderTasks(tasksToRender) {
             const container = document.getElementById('taskList');
             const emptyState = document.getElementById('emptyState');
@@ -381,7 +518,7 @@
                 container.innerHTML = '';
                 emptyState.classList.remove('hidden');
                 return;
-                }
+            }
             emptyState.classList.add('hidden');
             container.innerHTML = tasksToRender.map(task => {
                 const priorityIndex = Math.max(0, Math.min(3, (task.priority || 1) - 1));
@@ -392,33 +529,31 @@
                 const isCompleted = task.status === 'COMPLETED';
                 const tags = Array.isArray(task.tags) ? task.tags : [];
                 return `
-                    <div class="task-item bg-white rounded-xl shadow-md p-6 hover:shadow-xl transition ${priorityClass} ${isCompleted ? 'task-completed' : ''}">
+                    <div class="task-item rounded-2xl shadow-elegant-hover p-6 ${priorityClass} ${isCompleted ? 'task-completed' : ''}">
                         <div class="flex items-start justify-between mb-3">
                             <div class="flex-1">
                                 <h3 class="text-xl font-bold text-slate-800 mb-1">${escapeHtml(task.title)}</h3>
-                                ${task.description ? `<p class="text-slate-600 text-sm mb-3">${escapeHtml(task.description)}</p>` : ''}
+                                ${task.description ? `<p class="text-slate-600 text-sm mb-3 font-medium">${escapeHtml(task.description)}</p>` : ''}
                             </div>
                             <span class="text-2xl ml-2">${priorityEmoji}</span>
                         </div>
                         <div class="flex flex-wrap gap-2 mb-4">
-                            <span class="px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(task.status)}">${getStatusText(task.status)}</span>
-                            ${task.due_date ? `<span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold">📅 ${formatDate(task.due_date)}</span>` : ''}
-                            ${tags.map(tag => `<span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-semibold">#${escapeHtml(tag)}</span>`).join('')}
+                            <span class="px-3 py-1 rounded-full text-xs font-bold status-badge ${getStatusBadgeClass(task.status)}">${getStatusText(task.status)}</span>
+                            ${task.due_date ? `<span class="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-bold tag-pill">📅 ${formatDate(task.due_date)}</span>` : ''}
+                            ${tags.map(tag => `<span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-xs font-bold tag-pill">#${escapeHtml(tag)}</span>`).join('')}
                         </div>
                         <div class="flex flex-wrap gap-2">
-                            ${task.status !== 'IN_PROGRESS' ? `<button onclick="updateTaskStatus('${task.id}','IN_PROGRESS')" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm font-semibold">▶️ En Progreso</button>` : ''}
-                            ${task.status !== 'COMPLETED' ? `<button onclick="updateTaskStatus('${task.id}','COMPLETED')" class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition text-sm font-semibold">✓ Completar</button>` : ''}
-                            ${task.status !== 'CANCELLED' ? `<button onclick="updateTaskStatus('${task.id}','CANCELLED')" class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition text-sm font-semibold">⏸️ Cancelar</button>` : ''}
-                            <button onclick="deleteTask('${task.id}')" class="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition text-sm font-semibold ml-auto">🗑️ Eliminar</button>
+                            ${task.status !== 'IN_PROGRESS' ? `<button onclick="updateTaskStatus('${task.id}','IN_PROGRESS')" class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-xl transition text-sm font-bold shadow-md">▶️ En Progreso</button>` : ''}
+                            ${task.status !== 'COMPLETED' ? `<button onclick="updateTaskStatus('${task.id}','COMPLETED')" class="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-xl transition text-sm font-bold shadow-md">✓ Completar</button>` : ''}
+                            ${task.status !== 'CANCELLED' ? `<button onclick="updateTaskStatus('${task.id}','CANCELLED')" class="px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-xl transition text-sm font-bold shadow-md">⏸️ Cancelar</button>` : ''}
+                            <button onclick="deleteTask('${task.id}')" class="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-xl transition text-sm font-bold shadow-md">🗑️ Eliminar</button>
                         </div>
-                        <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500">Creada: ${formatDate(task.created_at)}</div>
+                        <div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500 font-medium">Creada: ${formatDate(task.created_at)}</div>
                     </div>
                 `;
             }).join('');
         }
-        /**
-         * Determine badge classes based on status
-         */
+
         function getStatusBadgeClass(status) {
             const map = {
                 'PENDING': 'bg-yellow-100 text-yellow-700',
@@ -428,9 +563,7 @@
             };
             return map[status] || 'bg-slate-100 text-slate-700';
         }
-        /**
-         * Translate status codes to user-friendly Spanish text
-         */
+
         function getStatusText(status) {
             const map = {
                 'PENDING': 'Pendiente',
@@ -440,24 +573,18 @@
             };
             return map[status] || status;
         }
-        /**
-         * Format ISO date strings into locale date
-         */
+
         function formatDate(dateString) {
             const date = new Date(dateString);
             return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'short', day: 'numeric' });
         }
-        /**
-         * Escape HTML to prevent injection
-         */
+
         function escapeHtml(text) {
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
         }
-        /**
-         * Display toast notification
-         */
+
         function showToast(message) {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toastMessage');
@@ -469,4 +596,4 @@
         }
     </script>
 </body>
-</html>
+</html
