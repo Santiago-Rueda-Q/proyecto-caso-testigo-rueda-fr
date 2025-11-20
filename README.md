@@ -10,7 +10,7 @@
 
 ## 📖 Descripción
 
-Task Manager Pro es una aplicación web SPA (Single Page Application) para la gestión inteligente de tareas. Ofrece una interfaz moderna con efectos visuales avanzados, diseño responsive y total integración con una API RESTful backend.
+SantiagoList es una aplicación web SPA (Single Page Application) para la gestión inteligente de tareas. Ofrece una interfaz moderna con efectos visuales avanzados, diseño responsive y total integración con una API RESTful backend.
 
 ## ✨ Características Principales
 
