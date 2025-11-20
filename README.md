@@ -1,4 +1,4 @@
-# 📋 Task Manager Pro
+# 📋 SantiagoList
 
 > Sistema de gestión de tareas moderno y elegante con interfaz responsive y diseño glassmorphism
 
